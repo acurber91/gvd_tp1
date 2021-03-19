@@ -17,14 +17,14 @@ Autor:
 5. Buscar los datos insertados en el nodo PRIMARY.
 6. Buscar los datos insertados en el nodo SECONDARY.
 7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor PRIMARY.
-   7.1 Explicar qué sucedió.
-   7.2 Verificar el estado de cada servidor.
-   7.3 Insertar un nuevo documento.
-   7.4 Levantar el servidor caído.
-   7.5 Validar la información en cada servidor.
+    1. Explicar qué sucedió.
+    2. Verificar el estado de cada servidor.
+    3. Insertar un nuevo documento.
+    4. Levantar el servidor caído.
+    5. Validar la información en cada servidor.
 8. Agregar un nuevo nodo con `slaveDelay` de 120 segundos.
 9. Ejecutar nuevamente el script `facts.js`. Asegurarse antes de ejecutarlo que el nodo con `slaveDelay` esté actualizado igual que PRIMARY.
-   9.1 Luego de ejecutado chequear el SECONDARY.
-   9.2 Consultar el nuevo nodo y ver cuando se actualizan los datos.
+    1. Luego de ejecutado chequear el SECONDARY.
+    2. Consultar el nuevo nodo y ver cuando se actualizan los datos.
 
 ![footer](doc/footer.png)

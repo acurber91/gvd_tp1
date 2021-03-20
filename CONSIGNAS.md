@@ -37,4 +37,5 @@ Autor:
     1. Luego de ejecutado chequear el SECONDARY.
     2. Consultar el nuevo nodo y ver cuando se actualizan los datos.
 
+
 ![footer](doc/footer.png)

@@ -24,7 +24,7 @@ Autor:
 
 #### 7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor PRIMARY.
 
-    #### 1. Explicar qué sucedió.
+   #### 1. Explicar qué sucedió.
     #### 2. Verificar el estado de cada servidor.
     #### 3. Insertar un nuevo documento.
     #### 4. Levantar el servidor caído.

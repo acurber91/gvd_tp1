@@ -34,8 +34,8 @@ Autor:
 
 **9. Ejecutar nuevamente el script `facts.js`. Asegurarse antes de ejecutarlo que el nodo con `slaveDelay` esté actualizado igual que PRIMARY.**
 
-    **1. Luego de ejecutado chequear el SECONDARY.**
-    **2. Consultar el nuevo nodo y ver cuando se actualizan los datos.**
+    1. **Luego de ejecutado chequear el SECONDARY.**
+    2. **Consultar el nuevo nodo y ver cuando se actualizan los datos.**
 
 
 ![footer](doc/footer.png)

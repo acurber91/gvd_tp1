@@ -25,7 +25,7 @@ Para ello, en una consola hacemos lo siguiente:
 
     mkdir data && cd data
     mkdir db && cd db
-    mkdir rs && cd db
+    mkdir rs && cd rs
     mkdir 0 1 2
 
 Lo mismo se aprecia en el siguiente video:

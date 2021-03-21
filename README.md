@@ -50,14 +50,14 @@ Ahora para configurar e inicializar el "replica set", tenemos que conectarnos de
 
 Una vez conectados, definimos la variable `cfg`, la cual contendrá la estructura de nuestro "replica set". El parámettro `_id` define el nombre del "replica set" mientras que `members` contiene a los servidores miembros de dicho conjunto.
 
-    	cfg = {
-		        _id:"rs",
-                members:[
-                    {_id:0, host:"localhost:27017"},
-                    {_id:1, host:"localhost:27018"},
-                    {_id:2, host:"localhost:27019", arbiterOnly:true}
-                ]
-	    };
+    cfg = {
+            _id:"rs",
+            members:[
+                {_id:0, host:"localhost:27017"},
+                {_id:1, host:"localhost:27018"},
+                {_id:2, host:"localhost:27019", arbiterOnly:true}
+            ]
+    };
 
 Por último, se requiere ejecutar el método `rs.initiate()` para inicializar el "replica set", pasándole como parámetro la estructura que contiene la configuración del mismo.
 
@@ -72,5 +72,21 @@ Por defecto, MongoDB reconoce al nodo como SECONDARY. Apretamos `Enter` para que
 ![Nodo primario](doc/primary.gif)
 
 **3. Crear la base de datos `finanzas`.**
+
+Como se necesita crear una base de datos utilizando datos de sensores IoT, se creará la base de datos `cosmic`.
+
+![Creación base de datos](doc/creacion-db.gif)
+
+Para rellenar la base de datos con información, vamos a utilizar la estructura de datos que es empleada en el proyecto [Cosmic Pi](http://cosmicpi.org/). El mismo tiene como objetivo construir el telescopio de rayos cósmicos distribuidos más grande del mundo. Al ser un proyecto de código abierto, utilizaremos la estructura de datos que generan los sensores y completaremos con información aleatoria. Dichos datos se encuentran definidos en `sensors.js`.
+
+**4. Ejecutar el script `facts.js` cuatro veces para crear volumen de datos.**
+
+Se utilizaron algunos de los campos que son enviados por los detectores de Cosmic Pi, tal cual se aprecia en el [repositorio oficial](https://github.com/CosmicPi/grafana_dashboards). Se generaron diez registros para dos sensores ficticios, los cuales se incluyeron en el archivo `sensors.js`. Para importarlos a la base de datos, solamente tenemos que correr el comando:
+
+    load("sensors.js")
+
+Tal cual se aprecia en la siguiente animación:
+
+![Carga de datos](doc/load-json.gif)
 
 ![footer](doc/footer.png)

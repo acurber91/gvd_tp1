@@ -123,4 +123,23 @@ Todo el proceso se muestra a continuación:
 
 **7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor PRIMARY.**
 
+Con el objetivo de mostrar un ejemplo de tolerancia a fallas, debemos disparar de algún modo el mecanismo de "failover". De esta manera, ante eventuales fallas que puedan ocurrir en el nodo primario, el sistema debería reaccionar y automáticamente seleccionar un nuevo nodo como primario.
+
+Por este motivo, primero vamos a interrumpir la ejecución del nodo primario con la señal `Ctrl+C`. Luego vamos a verificar que en el cliente conectado a dicho nodo la comunicación se perdió, por ejemplo ejecutando `show dbs`. Y por último vamos a ver como el nodo secundario ahora se convierte en primario. Toda la secuencia de muestra debajo de estas líneas.
+
+![Failover](doc/caida-primario.gif)
+
+Así se pudo comprobar que de forma "transparente" para el usuario, el sistema realizó una votación entre los nodos que se encontraban activos y se seleccionó al nodo secundario como nuevo primario.
+
+A continuación vamos a cargar nuevos datos en el nuevo nodo primario, que de ahora en más lo vamos a llamar primario*. Vamos a crear la base `cosmic1` y vamos a cargar los mismos datos que se encuentran en el archivo `sensors1.js`.
+
+![Nuevo documento](doc/creacion-documento-primario.gif)
+
+Como se pudo ver, el nodo primario* aceptó operaciones de escritura (si fuera secundario, esto no hubiera sido posible). Por lo que ahora si volvemos a inicializar el nodo primerario, la información debería replicarse luego de ejecutar el comando `rs.secondaryOk()`, ya que solamente lo ejecutamos en el nodo secundario original.
+
+El proceso completo de muestra a continuación:
+
+![Nuevo secundario](doc/nuevo-secundario.gif)
+
+
 ![footer](doc/footer.png)

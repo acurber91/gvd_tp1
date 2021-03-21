@@ -77,7 +77,7 @@ Como se necesita crear una base de datos utilizando datos de sensores IoT, se cr
 
 ![Creación base de datos](doc/creacion-db.gif)
 
-Para rellenar la base de datos con información, vamos a utilizar la estructura de datos que es empleada en el proyecto [Cosmic Pi](http://cosmicpi.org/). El mismo tiene como objetivo construir el telescopio de rayos cósmicos distribuidos más grande del mundo. Al ser un proyecto de código abierto, utilizaremos la estructura de datos que generan los sensores y completaremos con información aleatoria. Dichos datos se encuentran definidos en `sensors.js`.
+Para rellenar la base de datos con información, vamos a utilizar la estructura de datos que es empleada en el proyecto [Cosmic Pi](http://cosmicpi.org/). El mismo tiene como objetivo construir el telescopio de rayos cósmicos distribuido más grande del mundo. Al ser un proyecto de código abierto, utilizaremos la estructura de datos que generan los sensores y la completaremos con información ficticia. Dichos datos se encuentran definidos en `sensors.js`.
 
 **4. Ejecutar el script `facts.js` cuatro veces para crear volumen de datos.**
 
@@ -88,5 +88,39 @@ Se utilizaron algunos de los campos que son enviados por los detectores de Cosmi
 Tal cual se aprecia en la siguiente animación:
 
 ![Carga de datos](doc/load-json.gif)
+
+**5. Buscar los datos insertados en el nodo PRIMARY.**
+
+Para buscar los datos en el nodo primario, simplemente ejecutamos el comando:
+
+    db.sensores.find()
+
+Los datos que arroja dicho comando se pueden observar en el siguiente video.
+
+![Muestra de datos en nodo primario](doc/show-collections.gif)
+
+**6. Buscar los datos insertados en el nodo SECONDARY.**
+
+Para buscar los datos en el nodo secundario, primero nos conectamos  a él.
+
+    mongo --port 27018
+
+Antes de poder traer información, debemos ejecutar el comando `rs.secondaryOk()` para que MongoDB habilite operaciones de lectura por parte del nodo secundario y pueda llevarse a cabo así la replicación. Para ello, ejecutamos el comando en cuestión:
+
+    rs.secondaryOk()
+
+En esta instancia ya deberían estar copiados los datos al nodo secundario. Para buscarlos, primero simplemente seleccionamos la base de datos:
+
+    use cosmic
+
+Y por último mostramos los datos con el comando:
+
+    db.sensores.find()
+
+Todo el proceso se muestra a continuación:
+
+![Lectura del secundario](doc/lectura-secundario.gif)
+
+**7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor PRIMARY.**
 
 ![footer](doc/footer.png)

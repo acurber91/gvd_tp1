@@ -1,5 +1,5 @@
 db = db.getSiblingDB("cosmic");
-db.cosmic.insert([
+db.sensores.insert([
 	{
 		"deviceId" : "14:99:B2:AA:12:7A",
 		"position" : {

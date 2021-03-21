@@ -35,8 +35,8 @@ Lo mismo se aprecia en el siguiente video:
 Luego resta instanciar las tres instancias de `mongod` de la siguiente manera.
 
     mongod --replSet rs --dbpath /data/db/rs/0 --port 27017 --oplogSize 50
-    mongod --replSet rs --dbpath /data/db/rs/0 --port 27018 --oplogSize 50
-    mongod --replSet rs --dbpath /data/db/rs/0 --port 27019 --oplogSize 50
+    mongod --replSet rs --dbpath /data/db/rs/1 --port 27018 --oplogSize 50
+    mongod --replSet rs --dbpath /data/db/rs/2 --port 27019 --oplogSize 50
 
 En la siguiente animación se observa como se reemplazan los `--dbpath` por los directorios correspondientes.
 
@@ -59,7 +59,7 @@ Una vez conectados, definimos la variable `cfg`, la cual contendrá la estructur
             ]
     };
 
-Por último, se requiere ejecutar el método `rs.initiate()` para inicializar el "replica set", pasándole como parámetro la estructura que contiene la configuración del mismo.
+Por último, 8. Agregar un nuevo nodo con `slaveDelay` de 120 segundos.se requiere ejecutar el método `rs.initiate()` para inicializar el "replica set", pasándole como parámetro la estructura que contiene la configuración del mismo.
 
     rs.initiate(cfg)
 
@@ -141,5 +141,29 @@ El proceso completo de muestra a continuación:
 
 ![Nuevo secundario](doc/nuevo-secundario.gif)
 
+Se puede apreciar que en los mensajes que se muestran aparece `"newSyncSource":"localhost:27018"`, por lo que el sistema reconoce al primario*.
+
+**8. Agregar un nuevo nodo con `slaveDelay` de 120 segundos.**
+
+Debemos crear un nuevo directorio donde el nuevo nodo guardará la información. Para ello, hacemos:
+
+    cd /data/db/rs
+    mkdir 3
+
+Y luego instanciamos al nodo en cuestión:
+
+    mongod --replSet rs --dbpath /data/db/rs/3 --port 27020 --oplogSize 50
+
+Una vez hecho esto, debemos cambiar la variable `cfg` para incorporar al nuevo nodo. Para ello, en primario* ejecutamos lo siguiente:
+
+    cfg = {
+            _id:"rs",
+            members:[
+                {_id:0, host:"localhost:27017"},
+                {_id:1, host:"localhost:27018"},
+                {_id:2, host:"localhost:27019", arbiterOnly:true},
+                {_id:3, host:"localhost:27020", saveDealy:120},
+            ]
+    };
 
 ![footer](doc/footer.png)

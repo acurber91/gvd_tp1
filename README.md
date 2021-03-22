@@ -188,7 +188,7 @@ Mientras que en el segundo, esto se hará también de forma inmediada, porque se
 
 ![Secundario con delay](doc/lectura-secundario-2.gif)
 
-Por este motivo, para verificar el funcionamiento del "delay" vamos a crear una nueva base con `use cosmic1` en el nodo `primary` y revisar que en el nodo sin `slaveDelay` la replicación sea inmediata, mientras que en el nodo con delay no lo será. El chequeo de los secundarios se realiza a las 20:58:35 horas.
+Por este motivo, para verificar el funcionamiento del "delay" vamos a crear una nueva base con `use cosmic1` en el nodo `primary` y revisar que en el nodo sin `slaveDelay` la replicación se realiza inmediatamente, mientras que en el nodo con delay no ocurrirá lo mismo. El chequeo de los secundarios se realiza a las 20:58:35 horas.
 
 ![Revisión secundarios](doc/replicacion-con-delay.gif)
 

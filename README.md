@@ -145,16 +145,16 @@ Se puede apreciar que en los mensajes que se muestran aparece `"newSyncSource":"
 
 **8. Agregar un nuevo nodo con `slaveDelay` de 120 segundos.**
 
-Debemos crear un nuevo directorio donde el nuevo nodo guardará la información. Para ello, hacemos:
+Para reutilizar los datos de la base de datos, antes de comenzar vamos a detener todo el cluster y borrar los contenidos de las directorios `/data/db/rs/0`, `/data/db/rs/1` y `/data/db/rs/2`. Una vez hecho eso, debemos crear un nuevo directorio donde el nuevo nodo guardará la información. Para ello, hacemos:
 
     cd /data/db/rs
     mkdir 3
 
-Y luego instanciamos al nodo en cuestión:
+Luego repetimos el punto 1) del trabajo, agregando la siguiente línea:
 
     mongod --replSet rs --dbpath /data/db/rs/3 --port 27020 --oplogSize 50
 
-Una vez hecho esto, debemos cambiar la variable `cfg` para incorporar al nuevo nodo. Para ello, en primario* ejecutamos lo siguiente:
+Una vez hecho esto, nos conectamos al nodo primario y creamos la variable `cfg`, incorporando esta vez al nuevo nodo de acuerdo a como se muestra a continuación:
 
     cfg = {
             _id:"rs",
@@ -162,8 +162,39 @@ Una vez hecho esto, debemos cambiar la variable `cfg` para incorporar al nuevo n
                 {_id:0, host:"localhost:27017"},
                 {_id:1, host:"localhost:27018"},
                 {_id:2, host:"localhost:27019", arbiterOnly:true},
-                {_id:3, host:"localhost:27020", saveDealy:120},
+                {_id:3, host:"localhost:27020", slaveDelay:120, priority:0},
             ]
     };
+
+Luego corremos el comando `rs.initiate(cfg)`. Todo el proceso se muestra a continuación:
+
+![Nuevo miembro](doc/nuevo-miembro.gif)
+
+> **NOTA**: A veces MongoDB demora en reconocer al nodo primario ni bien se inicializa el "replica set". Eso mismo se verificó en el video anterior.
+
+**9. Ejecutar nuevamente el script `facts.js`. Asegurarse antes de ejecutarlo que el nodo con `slaveDelay` esté actualizado igual que PRIMARY.**
+
+Resta crear la nueva base de datos con `use cosmic` y luego `load("sensors.js")`.
+
+![Nuevos datos](doc/cargando-datos-nuevos.gif)
+
+Y nos queda por último acceder al nodo con `id: 1` e `id: 3` para permitir que puedan realizar lecturas en el nodo primario con `rs.secondaryOk()`.
+
+En el caso del primero, al ejecutar el comando se deberían replicar los datos de forma instantánea, tal cual se muestra en la siguiente animación:
+
+![Secundario sin delay](doc/lectura-secundario-1.gif)
+
+Mientras que en el segundo, esto se hará también de forma inmediada, porque se lo indica así el comando `rs.secondaryOk()`, tal cual se aprecia a continuación.
+
+![Secundario con delay](doc/lectura-secundario-2.gif)
+
+Por este motivo, para confirmar el delay en cuestión vamos a crear una nueva base con `use cosmic1` en el nodo primario y revisar que en el nodo sin `slaveDelay` la replicación es inmediata, mientras que en el nodo con delay no lo es. El chequeo de los secundarios se realiza a las 20:58:35 horas.
+
+![Revisión secundarios](doc/replicacion-con-delay.gif)
+
+De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 180 segundos, se comprueba que los datos están presentes.
+
+![Revisión nodo con delay](doc/chequeo-luego-del-delay.gif)
+
 
 ![footer](doc/footer.png)

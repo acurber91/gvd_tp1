@@ -10,7 +10,7 @@ Docente:
 
 * Yoel Yamil López
 
-**1. Implementar en MongoDB un `replica set` con 3 servidores que contengan la información de la base de datos finanzas. Un nodo `PRIMARY`, un `SECONDARY` y un `ARBITER`.**
+**1. Implementar en MongoDB un `replica set` con 3 servidores que contengan la información de la base de datos `finanzas`. Un nodo `primary`, un `secondary` y un `arbiter`.**
 
 Antes de inicializar las tres instancias de `mongod` vamos a crear los siguientes directorios:
 
@@ -32,7 +32,7 @@ Lo mismo se aprecia en el siguiente video:
 
 ![Creación de directorios](doc/create-directory.gif)
 
-Luego resta instanciar las tres instancias de `mongod` de la siguiente manera.
+Luego resta ejecutar las tres instancias de `mongod` de la siguiente manera.
 
     mongod --replSet rs --dbpath /data/db/rs/0 --port 27017 --oplogSize 50
     mongod --replSet rs --dbpath /data/db/rs/1 --port 27018 --oplogSize 50
@@ -42,9 +42,9 @@ En la siguiente animación se observa como se reemplazan los `--dbpath` por los 
 
 ![Instanciación de mongod](doc/mongod-instances.gif)
 
-**2. Conectarse al nodo PRIMARY.**
+**2. Conectarse al nodo `primary`.**
 
-Ahora para configurar e inicializar el "replica set", tenemos que conectarnos desde un cliente de Mongo al nodo PRIMARY. Para ello:
+Ahora para configurar e inicializar el "replica set", tenemos que conectarnos desde un cliente de MongoDB al nodo `primary`. Para ello:
 
     mongo --port 27017
 
@@ -59,7 +59,7 @@ Una vez conectados, definimos la variable `cfg`, la cual contendrá la estructur
             ]
     };
 
-Por último, 8. Agregar un nuevo nodo con `slaveDelay` de 120 segundos.se requiere ejecutar el método `rs.initiate()` para inicializar el "replica set", pasándole como parámetro la estructura que contiene la configuración del mismo.
+Por último, se requiere ejecutar el método `rs.initiate()` para inicializar el "replica set", pasándole como parámetro la estructura que contiene la configuración del mismo.
 
     rs.initiate(cfg)
 
@@ -67,13 +67,13 @@ Todo esto lo podemos observar en la siguiente animación:
 
 ![Inicialización de replica set](doc/inicializacion-replica-set.gif)
 
-Por defecto, MongoDB reconoce al nodo como SECONDARY. Apretamos `Enter` para que se reconfigure y tome ahora si al nodo como PRIMARY.
+Por defecto, MongoDB reconoce al nodo como `secondary`. Apretamos `Enter` para que se reconfigure y tome ahora si al nodo como PRIMARY.
 
 ![Nodo primario](doc/primary.gif)
 
 **3. Crear la base de datos `finanzas`.**
 
-Como se necesita crear una base de datos utilizando datos de sensores IoT, se creará la base de datos `cosmic`.
+Como se necesita crear una base de datos relacionada con aplicaciones IoT, se creará la base de datos `cosmic`.
 
 ![Creación base de datos](doc/creacion-db.gif)
 
@@ -89,7 +89,7 @@ Tal cual se aprecia en la siguiente animación:
 
 ![Carga de datos](doc/load-json.gif)
 
-**5. Buscar los datos insertados en el nodo PRIMARY.**
+**5. Buscar los datos insertados en el nodo `primary`.**
 
 Para buscar los datos en el nodo primario, simplemente ejecutamos el comando:
 
@@ -99,13 +99,13 @@ Los datos que arroja dicho comando se pueden observar en el siguiente video.
 
 ![Muestra de datos en nodo primario](doc/show-collections.gif)
 
-**6. Buscar los datos insertados en el nodo SECONDARY.**
+**6. Buscar los datos insertados en el nodo `secondary`.**
 
 Para buscar los datos en el nodo secundario, primero nos conectamos  a él.
 
     mongo --port 27018
 
-Antes de poder traer información, debemos ejecutar el comando `rs.secondaryOk()` para que MongoDB habilite operaciones de lectura por parte del nodo secundario y pueda llevarse a cabo así la replicación. Para ello, ejecutamos el comando en cuestión:
+Antes de poder traer información debemos ejecutar el comando `rs.secondaryOk()` para que MongoDB habilite operaciones de lectura por parte del nodo secundario y pueda llevarse a cabo la replicación. Para ello, ejecutamos el comando en cuestión:
 
     rs.secondaryOk()
 
@@ -121,7 +121,7 @@ Todo el proceso se muestra a continuación:
 
 ![Lectura del secundario](doc/lectura-secundario.gif)
 
-**7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor PRIMARY.**
+**7. Realizar un ejemplo de "fault tolerance", simulando una caída del servidor `primary`.**
 
 Con el objetivo de mostrar un ejemplo de tolerancia a fallas, debemos disparar de algún modo el mecanismo de "failover". De esta manera, ante eventuales fallas que puedan ocurrir en el nodo primario, el sistema debería reaccionar y automáticamente seleccionar un nuevo nodo como primario.
 
@@ -129,19 +129,19 @@ Por este motivo, primero vamos a interrumpir la ejecución del nodo primario con
 
 ![Failover](doc/caida-primario.gif)
 
-Así se pudo comprobar que de forma "transparente" para el usuario, el sistema realizó una votación entre los nodos que se encontraban activos y se seleccionó al nodo secundario como nuevo primario.
+Así, se pudo comprobar que de forma "transparente" para el usuario el sistema realizó una votación entre los nodos que se encontraban activos y se seleccionó al nodo secundario como nuevo primario.
 
-A continuación vamos a cargar nuevos datos en el nuevo nodo primario, que de ahora en más lo vamos a llamar primario*. Vamos a crear la base `cosmic1` y vamos a cargar los mismos datos que se encuentran en el archivo `sensors1.js`.
+A continuación vamos a cargar nuevos datos en el nuevo nodo primario, que de ahora en más lo vamos a llamar `primary*`. Vamos a crear la base `cosmic1` y vamos a cargar los mismos datos que se encuentran en el archivo `sensors1.js`.
 
 ![Nuevo documento](doc/creacion-documento-primario.gif)
 
-Como se pudo ver, el nodo primario* aceptó operaciones de escritura (si fuera secundario, esto no hubiera sido posible). Por lo que ahora si volvemos a inicializar el nodo primerario, la información debería replicarse luego de ejecutar el comando `rs.secondaryOk()`, ya que solamente lo ejecutamos en el nodo secundario original.
+Como se pudo ver, el nodo `primary*` aceptó operaciones de escritura (si fuera secundario, esto no hubiera sido posible). Por lo que ahora si volvemos a inicializar el nodo `primary`, la información debería replicarse luego de ejecutar el comando `rs.secondaryOk()`, ya que solamente lo ejecutamos en el nodo secundario original.
 
 El proceso completo de muestra a continuación:
 
 ![Nuevo secundario](doc/nuevo-secundario.gif)
 
-Se puede apreciar que en los mensajes que se muestran aparece `"newSyncSource":"localhost:27018"`, por lo que el sistema reconoce al primario*.
+Se observa que en los mensajes que se muestran en la consola de comandos que aparece `"newSyncSource":"localhost:27018"`, por lo que el sistema reconoce al `primary*`.
 
 **8. Agregar un nuevo nodo con `slaveDelay` de 120 segundos.**
 
@@ -154,7 +154,7 @@ Luego repetimos el punto 1) del trabajo, agregando la siguiente línea:
 
     mongod --replSet rs --dbpath /data/db/rs/3 --port 27020 --oplogSize 50
 
-Una vez hecho esto, nos conectamos al nodo primario y creamos la variable `cfg`, incorporando esta vez al nuevo nodo de acuerdo a como se muestra a continuación:
+Una vez hecho esto, nos conectamos al nodo primario y creamos la variable `cfg`, incorporando esta vez al nuevo nodo de acuerdo a como se detalla a continuación:
 
     cfg = {
             _id:"rs",
@@ -174,11 +174,11 @@ Luego corremos el comando `rs.initiate(cfg)`. Todo el proceso se muestra a conti
 
 **9. Ejecutar nuevamente el script `facts.js`. Asegurarse antes de ejecutarlo que el nodo con `slaveDelay` esté actualizado igual que PRIMARY.**
 
-Resta crear la nueva base de datos con `use cosmic` y luego `load("sensors.js")`.
+Vamos a crear la nueva base de datos con `use cosmic` y luego `load("sensors.js")`.
 
 ![Nuevos datos](doc/cargando-datos-nuevos.gif)
 
-Y nos queda por último acceder al nodo con `id: 1` e `id: 3` para permitir que puedan realizar lecturas en el nodo primario con `rs.secondaryOk()`.
+Y nos queda por último acceder al nodo con `id: 1` e `id: 3` para permitir que puedan realizarse lecturas en el nodo primario con `rs.secondaryOk()`.
 
 En el caso del primero, al ejecutar el comando se deberían replicar los datos de forma instantánea, tal cual se muestra en la siguiente animación:
 
@@ -188,11 +188,11 @@ Mientras que en el segundo, esto se hará también de forma inmediada, porque se
 
 ![Secundario con delay](doc/lectura-secundario-2.gif)
 
-Por este motivo, para confirmar el delay en cuestión vamos a crear una nueva base con `use cosmic1` en el nodo primario y revisar que en el nodo sin `slaveDelay` la replicación es inmediata, mientras que en el nodo con delay no lo es. El chequeo de los secundarios se realiza a las 20:58:35 horas.
+Por este motivo, para verificar el funcionamiento del "delay" vamos a crear una nueva base con `use cosmic1` en el nodo `primary` y revisar que en el nodo sin `slaveDelay` la replicación sea inmediata, mientras que en el nodo con delay no lo será. El chequeo de los secundarios se realiza a las 20:58:35 horas.
 
 ![Revisión secundarios](doc/replicacion-con-delay.gif)
 
-De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 180 segundos, se comprueba que los datos están presentes.
+De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 180 segundos, se comprueba que los datos están presentes en el nodo con "delay".
 
 ![Revisión nodo con delay](doc/chequeo-luego-del-delay.gif)
 

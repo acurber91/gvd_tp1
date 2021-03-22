@@ -10,19 +10,19 @@ Autor:
 
 ### Consignas
 
-1. Implementar en MongoDB un ReplicaSet con 3 servidores que contengan la información de la base de datos `finanzas`. Un nodo PRIMARY, un SECONDARY y un ARBITER.
+1. Implementar en MongoDB un ReplicaSet con 3 servidores que contengan la información de la base de datos `finanzas`. Un nodo `primary`, un `secondary` y un `arbiter`.
 
-2. Conectarse al nodo PRIMARY.
+2. Conectarse al nodo `primary`.
 
 3. Crear la base de datos `finanzas`.
 
 4. Ejecutar el script `facts.js` cuatro veces para crear volumen de datos.
 
-5. Buscar los datos insertados en el nodo PRIMARY.
+5. Buscar los datos insertados en el nodo `primary`.
 
-6. Buscar los datos insertados en el nodo SECONDARY.
+6. Buscar los datos insertados en el nodo `secondary`.
 
-7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor PRIMARY.
+7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor `primary`.
 
     1. Explicar qué sucedió.
     2. Verificar el estado de cada servidor.
@@ -32,9 +32,9 @@ Autor:
 
 8. Agregar un nuevo nodo con `slaveDelay` de 120 segundos.
 
-9. Ejecutar nuevamente el script `facts.js`. Asegurarse antes de ejecutarlo que el nodo con `slaveDelay` esté actualizado igual que PRIMARY.
+9. Ejecutar nuevamente el script `facts.js`. Asegurarse antes de ejecutarlo que el nodo con `slaveDelay` esté actualizado igual que `primary`.
 
-    1. Luego de ejecutado chequear el SECONDARY.
+    1. Luego de ejecutado chequear el `secondary`.
     2. Consultar el nuevo nodo y ver cuando se actualizan los datos.
 
 

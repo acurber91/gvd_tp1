@@ -196,5 +196,6 @@ De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 18
 
 ![Revisión nodo con delay](doc/chequeo-luego-del-delay.gif)
 
+---
 
 ![footer](doc/footer.png)

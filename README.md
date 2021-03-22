@@ -10,7 +10,7 @@ Docente:
 
 * Yoel Yamil López
 
-**1. Implementar en MongoDB un `replica set` con 3 servidores que contengan la información de la base de datos `finanzas`. Un nodo `primary`, un `secondary` y un `arbiter`.**
+**1. Implementar en MongoDB un `replica set` con tres servidores que contengan la información de la base de datos `finanzas`. Un nodo `primary`, un `secondary` y un `arbiter`.**
 
 Antes de inicializar las tres instancias de `mongod` vamos a crear los siguientes directorios:
 

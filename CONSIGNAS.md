@@ -10,7 +10,7 @@ Autor:
 
 ### Consignas
 
-1. Implementar en MongoDB un ReplicaSet con 3 servidores que contengan la información de la base de datos `finanzas`. Un nodo `primary`, un `secondary` y un `arbiter`.
+1. Implementar en MongoDB un "replica set" con tres servidores que contengan la información de la base de datos `finanzas`. Un nodo `primary`, un `secondary` y un `arbiter`.
 
 2. Conectarse al nodo `primary`.
 
@@ -22,7 +22,7 @@ Autor:
 
 6. Buscar los datos insertados en el nodo `secondary`.
 
-7. Realizar un ejemplo de "Fault Tolerance", simulando una caída del servidor `primary`.
+7. Realizar un ejemplo de "fault tolerance", simulando una caída del servidor `primary`.
 
     1. Explicar qué sucedió.
     2. Verificar el estado de cada servidor.

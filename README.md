@@ -10,6 +10,10 @@ Docente:
 
 * Yoel Yamil López
 
+### Parte A: Replicación de bases de datos en MongoDB
+
+---
+
 **1. Implementar en MongoDB un "replica set" con tres servidores que contengan la información de la base de datos `finanzas`. Un nodo `primary`, un `secondary` y un `arbiter`.**
 
 Antes de inicializar las tres instancias de `mongod` vamos a crear los siguientes directorios:
@@ -195,6 +199,19 @@ Por este motivo, para verificar el funcionamiento del "delay" vamos a crear una 
 De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 180 segundos, se comprueba que los datos están presentes en el nodo con "delay".
 
 ![Revisión nodo con delay](doc/chequeo-luego-del-delay.gif)
+
+### Parte B: Implementar "sharding" en MongoDB
+
+---
+
+
+
+
+
+
+
+
+
 
 ---
 

@@ -194,7 +194,7 @@ Mientras que en el segundo, esto se hará también de forma inmediada, porque se
 
 Por este motivo, para verificar el funcionamiento del "delay" vamos a crear una nueva base con `use cosmic1` en el nodo `primary` y revisar que en el nodo sin `slaveDelay` la replicación se realiza inmediatamente, mientras que en el nodo con delay no ocurrirá lo mismo. El chequeo de los secundarios se realiza a las 20:58:35 horas.
 
-![Revisión secundarios](doc/replicacion-con-delay.gif)
+![Revisión secundarios](doc/replicaci"shard"on-con-delay.gif)
 
 De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 180 segundos, se comprueba que los datos están presentes en el nodo con "delay".
 
@@ -204,7 +204,170 @@ De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 18
 
 ---
 
+**1.  Basados en la colección de `facturas` en la base de datos `finanzas`.**
 
+Esto se implementó en la **Parte A** del presente trabajo. Se utilizará como base para esta segunda parte.
+
+**2.  Levantar todas las instancias necesarias para tener un cluster distribuido con un único "shard".**
+
+Como los "shards" y servidores de configuración requieren de un "replica set" cada uno, vamos a utilizar la siguiente 
+estructura de carpetas. El proceso de creación es el mismo que en el punto 1) de la Parte A.
+
+    ├── data                # Directorio raíz para almacenar los datos.
+        └── db              # Directorio para los datos de la base de datos.
+            └── rs          # Directorio para las instancias que conformarán el replica set.
+                ├── 0       # Directorio donde la instancia PRIMARY del shard A.
+                ├── 1       # Directorio donde la instancia SECONDARY del shard A.
+                ├── 2       # Directorio donde la instancia ARBITER del shard A.
+                ├── 3       # Directorio donde la instancia PRIMARY del shard B.
+                ├── 4       # Directorio donde la instancia SECONDARY del shard B.
+                ├── 5       # Directorio donde la instancia ARBITER del shard B.
+                ├── 6       # Directorio donde la instancia PRIMARY del shard C.
+                ├── 7       # Directorio donde la instancia SECONDARY del shard C.
+                ├── 8       # Directorio donde la instancia ARBITER del shard C.
+                ├── 9       # Directorio donde la instancia PRIMARY del replica set del servidor de configuración.
+                ├── 10      # Directorio donde la instancia SECONDARY del replica set del servidor de configuración.
+                └── 11      # Directorio donde la instancia ARBITER del replica set del servidor de configuración.
+
+**Shard A**
+
+Para inicializar el primer "shard" armamos el primer "cluster" de la siguiente manera, reemplazando el `--dbpath` 
+por el que corresponde y agregamos la opción `--shardsvr` para indicar que forman parte de un "shard".
+
+    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/0 --port 27017 --oplogSize 50
+    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/1 --port 27018 --oplogSize 50
+    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/2 --port 27019 --oplogSize 50
+
+![Instanciación de mongod](doc/shard-instances.gif)
+
+Luego nos conectamos al nodo primario:
+
+    mongo --port 27017
+
+Y configuramos el "cluster", tal cual se muestra aquí debajo:
+
+    cfg = {
+            _id:"rs_A",
+            members:[
+                {_id:0, host:"localhost:27017"},
+                {_id:1, host:"localhost:27018"},
+                {_id:2, host:"localhost:27019", arbiterOnly:true}
+            ]
+    };
+
+Y se inicializa con `rs.initiate()`. A continuación se muestra el proceso completo.
+
+![Instanciación de shard A](doc/initiate-shard-a.gif)
+
+Vamos a repetir todo este proceso para los "shards" B y C. Para ello:
+
+**Shard B**
+
+    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/3 --port 27020 --oplogSize 50
+    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/4 --port 27021 --oplogSize 50
+    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/5 --port 27022 --oplogSize 50
+
+Utilizando la siguiente configuración:
+
+    cfg = {
+            _id:"rs_B",
+            members:[
+                {_id:0, host:"localhost:27020"},
+                {_id:1, host:"localhost:27021"},
+                {_id:2, host:"localhost:27022", arbiterOnly:true}
+            ]
+    };
+
+El proceso completo para el "shard" B se muestra a continuación:
+
+![Configuración shard B](doc/configuracion-shard-b.gif)
+
+**Shard C**
+
+Los comandos serán:
+
+    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/6 --port 27023 --oplogSize 50
+    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/7 --port 27024 --oplogSize 50
+    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/8 --port 27025 --oplogSize 50
+
+Mientras que la variable `cfg` tendrá los siguientes datos:
+
+    cfg = {
+            _id:"rs_C",
+            members:[
+                {_id:0, host:"localhost:27023"},
+                {_id:1, host:"localhost:27024"},
+                {_id:2, host:"localhost:27025", arbiterOnly:true}
+            ]
+    };
+
+Todo el proceso se muestra en el siguiente video:
+
+![Configuración shard C](doc/configuracion-shard-c.gif)
+
+**Servidores de configuración**
+
+Para continuar con la instanciación vamos a configurar los servidores de configuración. En este caso solamente se requiere que 
+sea un cluster, por lo que debemos reemplazar el "flag" `-shardsvr` por `--configsvr` para que MongoDB los considere como servidores
+de configuración. Los comandos quedarían así:
+
+    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/6 --port 27023 --oplogSize 50
+    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/7 --port 27024 --oplogSize 50
+    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/8 --port 27025 --oplogSize 50
+
+Algo a tener en cuenta es que este tipo de servidores no pueden ser árbitros, motivo por el cual debemos especificar en 
+la variable `cfg` a los tres nodos como posibles secundarios.
+
+    cfg = {
+            _id:"C",
+            members:[
+                {_id:0, host:"localhost:27026"},
+                {_id:1, host:"localhost:27027"},
+                {_id:2, host:"localhost:27028"}
+            ]
+    };
+
+Todo este proceso se muestra a continuación:
+
+![Configuración controladores](doc/configuracion-rs-controlador.gif)
+
+**Servidor de ruteo**
+
+Para completar el proceso de inicialización del "shard", debemos levantar un servidor de ruteo. Esto es muy simple, ejecutando el 
+siguiente comando:
+
+    mongos --configdb c/localhost:27500
+
+Una vez hecho eso, nos conectamos a dicho nodo:
+
+    mongo --port 27500
+
+Y agregamos al "shard" el que configuramos como partición A:
+
+    sh.addShard("rs_A/localhost:27017")
+
+
+**3.  Pensar las consultas que podrían realizarse a esta colección y definir una clave acorde para implementar "sharding".**
+
+**4.  Implementar "sharding" en la base de datos `finanzas` sobre la colección `facturas`. Consultar la metadata del cluster.**
+
+**5.  Agregar dos nuevos "shards" al cluster.**
+
+**6.  Ejecutar el script `facts.js` cinco veces para crear volumen de datos.**
+
+Por último, nos conectamos al nodo secundario del cluster A y habilitamos la replicación con `rs.secondaryOk()`.
+
+![Habilitación réplica de shard A](doc/habilitacion-secundario-a.gif)
+
+Antes de avanzar al servidor de configuración, cargamos datos en la base de datos `cosmic` utilizando el archivo `sensors.js` 
+tal cual se ve debajo de estas líneas:
+
+![Datos en shard A](doc/datos-en-shard-a.gif)
+
+**7.  Consultar nuevamente la metadata del cluster. Ver los "shards" disponibles, los `chunks` creados y en que "shard" están estos.**
+
+**8.  Definir dos consultas que obtengan cierta información de la base de datos e informar la salida del "explain". Una debe poder obtener**
+**la información de un único "shard" y la otra debe tener que consultarlos a todos.**
 
 
 

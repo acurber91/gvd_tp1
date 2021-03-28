@@ -234,147 +234,213 @@ estructura de carpetas. El proceso de creación es el mismo que en el punto 1) d
 Para inicializar el primer "shard" armamos el primer "cluster" de la siguiente manera, reemplazando el `--dbpath` 
 por el que corresponde y agregamos la opción `--shardsvr` para indicar que forman parte de un "shard".
 
-    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/0 --port 27017 --oplogSize 50
-    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/1 --port 27018 --oplogSize 50
-    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/2 --port 27019 --oplogSize 50
-
-![Instanciación de mongod](doc/shard-instances.gif)
+    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/0 --port 27060 --oplogSize 50
+    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/1 --port 27061 --oplogSize 50
+    mongod --shardsvr --replSet rs_A --dbpath /data/db/rs/2 --port 27062 --oplogSize 50
 
 Luego nos conectamos al nodo primario:
 
-    mongo --port 27017
+    mongo --port 27060
 
 Y configuramos el "cluster", tal cual se muestra aquí debajo:
 
     cfg = {
             _id:"rs_A",
             members:[
-                {_id:0, host:"localhost:27017"},
-                {_id:1, host:"localhost:27018"},
-                {_id:2, host:"localhost:27019", arbiterOnly:true}
+                {_id:0, host:"localhost:27060"},
+                {_id:1, host:"localhost:27061"},
+                {_id:2, host:"localhost:27062", arbiterOnly:true}
             ]
     };
 
 Y se inicializa con `rs.initiate()`. A continuación se muestra el proceso completo.
 
-![Instanciación de shard A](doc/initiate-shard-a.gif)
+![Instanciación de shard A](doc/shard-init-a.gif)
 
 Vamos a repetir todo este proceso para los "shards" B y C. Para ello:
 
 **Shard B**
 
-    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/3 --port 27020 --oplogSize 50
-    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/4 --port 27021 --oplogSize 50
-    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/5 --port 27022 --oplogSize 50
+    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/3 --port 27063 --oplogSize 50
+    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/4 --port 27064 --oplogSize 50
+    mongod --shardsvr --replSet rs_B --dbpath /data/db/rs/5 --port 27065 --oplogSize 50
 
 Utilizando la siguiente configuración:
 
     cfg = {
             _id:"rs_B",
             members:[
-                {_id:0, host:"localhost:27020"},
-                {_id:1, host:"localhost:27021"},
-                {_id:2, host:"localhost:27022", arbiterOnly:true}
+                {_id:0, host:"localhost:27063"},
+                {_id:1, host:"localhost:27064"},
+                {_id:2, host:"localhost:27065", arbiterOnly:true}
             ]
     };
 
 El proceso completo para el "shard" B se muestra a continuación:
 
-![Configuración shard B](doc/configuracion-shard-b.gif)
+![Configuración shard B](doc/shard-init-b.gif)
 
 **Shard C**
 
 Los comandos serán:
 
-    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/6 --port 27023 --oplogSize 50
-    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/7 --port 27024 --oplogSize 50
-    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/8 --port 27025 --oplogSize 50
+    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/6 --port 27066 --oplogSize 50
+    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/7 --port 27067 --oplogSize 50
+    mongod --shardsvr --replSet rs_C --dbpath /data/db/rs/8 --port 27068 --oplogSize 50
 
 Mientras que la variable `cfg` tendrá los siguientes datos:
 
     cfg = {
             _id:"rs_C",
             members:[
-                {_id:0, host:"localhost:27023"},
-                {_id:1, host:"localhost:27024"},
-                {_id:2, host:"localhost:27025", arbiterOnly:true}
+                {_id:0, host:"localhost:27066"},
+                {_id:1, host:"localhost:27067"},
+                {_id:2, host:"localhost:27068", arbiterOnly:true}
             ]
     };
 
 Todo el proceso se muestra en el siguiente video:
 
-![Configuración shard C](doc/configuracion-shard-c.gif)
+![Configuración shard C](doc/shard-init-c.gif)
 
 **Servidores de configuración**
 
-Para continuar con la instanciación vamos a configurar los servidores de configuración. En este caso solamente se requiere que 
+Para continuar con la inicialización vamos a configurar los servidores de configuración. En este caso solamente se requiere que 
 sea un cluster, por lo que debemos reemplazar el "flag" `-shardsvr` por `--configsvr` para que MongoDB los considere como servidores
 de configuración. Los comandos quedarían así:
 
-    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/6 --port 27023 --oplogSize 50
-    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/7 --port 27024 --oplogSize 50
-    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/8 --port 27025 --oplogSize 50
+    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/9 --port 28500 --oplogSize 50
+    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/10 --port 28501 --oplogSize 50
+    mongod --configsvr --replSet rs_C --dbpath /data/db/rs/11 --port 28502 --oplogSize 50
 
-Algo a tener en cuenta es que este tipo de servidores no pueden ser árbitros, motivo por el cual debemos especificar en 
-la variable `cfg` a los tres nodos como posibles secundarios.
+Algo a tener en cuenta es que este tipo de servidores no pueden ser árbitros ni tener demoras configuradas, motivo por el cual debemos especificar en 
+la variable `cfg` a los tres nodos como posibles primarios.
 
     cfg = {
             _id:"C",
             members:[
-                {_id:0, host:"localhost:27026"},
-                {_id:1, host:"localhost:27027"},
-                {_id:2, host:"localhost:27028"}
+                {_id:0, host:"localhost:28500"},
+                {_id:1, host:"localhost:28501"},
+                {_id:2, host:"localhost:28502"}
             ]
     };
 
 Todo este proceso se muestra a continuación:
 
-![Configuración controladores](doc/configuracion-rs-controlador.gif)
+![Configuración controladores](doc/shard-init-controller.gif)
 
 **Servidor de ruteo**
 
-Para completar el proceso de inicialización del "shard", debemos levantar un servidor de ruteo. Esto es muy simple, ejecutando el 
-siguiente comando:
+Finalmente, debemos inicializar un servidor de ruteo. Esto se hace ejecutando el siguiente comando, apuntando a uno de los servidores de configuración. Adicionalmente, debemos especificar el puerto donde se ejecutará la instancia de `mongos`.
 
-    mongos --configdb c/localhost:27500
+    mongos --configdb C/localhost:28500 --port 27017
 
 Una vez hecho eso, nos conectamos a dicho nodo:
 
-    mongo --port 27500
+    mongo --port 27017
 
-Y agregamos al "shard" el que configuramos como partición A:
+Y agregamos el "shard" A como una partición:
 
-    sh.addShard("rs_A/localhost:27017")
+    sh.addShard("rs_A/localhost:27060")
 
+El proceso completo se muestra a continuación:
+
+![Configuración servidor de ruteo](doc/init-shard-server.gif)
 
 **3.  Pensar las consultas que podrían realizarse a esta colección y definir una clave acorde para implementar "sharding".**
 
+La "shard key" que podría seleccionarse de acuerdo a las posibles consultas es la siguiente clave compuesta: `{timestamp:1, "deviceId": 1}`.
+
 **4.  Implementar "sharding" en la base de datos `finanzas` sobre la colección `facturas`. Consultar la metadata del cluster.**
+
+Vamos a crear la base de datos `cosmic` conectados al servidor de ruteo y crear la "shard key" con el comando:
+
+    db.sensores.createIndex({timestamp:1, "deviceId": 1})
+
+Luego tendremos que habilitar el "sharding" en dicha base de datos. Para ello hacemos:
+
+    sh.enableSharding("cosmic")
+
+Y luego podremos aplicar "sharding" en la colección:
+
+    sh.shardCollection("consmic.sensores", {"timestamp:1, "deviceId": 1})
+
+Finalmente mostramos la "metadata" del cluster con el comando:
+
+    sh.status()
+
+Todo el proceso se muestra en la siguiente animación:
+
+![Habilitación del "sharding"](doc/habilitacion-sharding.gif)
 
 **5.  Agregar dos nuevos "shards" al cluster.**
 
+Vamos a agregar los dos clusters que ya habíamos inicializado en el punto 1). Para ello, solamente tenemos que ejecutar:
+
+    sh.addShard("rs_B/localhost:27063")
+    sh.addShard("rs_C/localhost:27066")
+
+Y luego con `sh.status()` los deberíamos encontrar listados. A continuación se observa este proceso:
+
+![Adición de nuevos "shards"](doc/two-shards-more.gif)
+
 **6.  Ejecutar el script `facts.js` cinco veces para crear volumen de datos.**
 
-Por último, nos conectamos al nodo secundario del cluster A y habilitamos la replicación con `rs.secondaryOk()`.
+Como la base de datos elegida no tiene muchos registros, vamos a correr el archivo `sensors.js` unas veinte veces.
 
-![Habilitación réplica de shard A](doc/habilitacion-secundario-a.gif)
-
-Antes de avanzar al servidor de configuración, cargamos datos en la base de datos `cosmic` utilizando el archivo `sensors.js` 
-tal cual se ve debajo de estas líneas:
-
-![Datos en shard A](doc/datos-en-shard-a.gif)
+![Datos en shard](doc/carga-datos-en-shard.gif)
 
 **7.  Consultar nuevamente la metadata del cluster. Ver los "shards" disponibles, los `chunks` creados y en que "shard" están estos.**
+
+Para revisar la metadata debemos ejecutar `sh.status()`. Por otro lado, par revisar los "chunks" y "shards" utilizaremos los siguientes 
+comandos:
+
+	use config
+	db.chunks.find({}, {min:1,max:1,shard:1,_id:0,ns:1}).pretty()
+
+Esta consulta se muestra en el siguiente video:
+
+![Consulta de "chunks"](doc/consulta-chunks.gif)
+
+Antes de cargar los datos de `sensors.js`, el estado de las particiones era la siguiente:
+
+    rs_A	1022
+    rs_B	1
+    rs_C	1
+
+No obstante, luego de haber cargado los datos se observa como todo el "shard" tiende a balancearse.
+
+    rs_A	789
+    rs_B	118
+    rs_C	117
 
 **8.  Definir dos consultas que obtengan cierta información de la base de datos e informar la salida del "explain". Una debe poder obtener**
 **la información de un único "shard" y la otra debe tener que consultarlos a todos.**
 
+Como la cantidad de datos es muy poca, fue necesario ejecutar el siguiente "script":
 
+    for (var i=0; i<10000; i++) {
+        load("/home/agustin/MIoT/GVD/gvd_tp1/sensors.js")
+    }
 
+Luego de haber ejecutado ese "loop", los "shards" quedaron totalmente equilibrados:
 
+    rs_A	342
+    rs_B	341
+    rs_C	341
 
+No obstante, no se consiguió verificar con las dos consultas resultados diferentes. Ambas devolvieron datos del `sh_A`.
+La siguiente consulta debería recuperar datos de múltiples "shards".
 
+    db.sensores.find({"timestamp": {$gt: 1616354730}}).explain()
 
+![Consulta A](doc/consulta-a.gif)
+
+Mientras que buscando solamente por un dato particular, debería obtenerlo solamente de uno:
+
+    db.sensores.find({"deviceId": "14:99:B2:AA:12:7A"}).explain()
+
+![Consulta B](doc/consulta-b.gif)
 
 ---
 

@@ -194,7 +194,7 @@ Mientras que en el segundo, esto se hará también de forma inmediada, porque se
 
 Por este motivo, para verificar el funcionamiento del "delay" vamos a crear una nueva base con `use cosmic1` en el nodo `primary` y revisar que en el nodo sin `slaveDelay` la replicación se realiza inmediatamente, mientras que en el nodo con delay no ocurrirá lo mismo. El chequeo de los secundarios se realiza a las 20:58:35 horas.
 
-![Revisión secundarios](doc/replicaci"shard"on-con-delay.gif)
+![Revisión secundarios](doc/replicacion-con-delay.gif)
 
 De la misma manera, a las 21:01:24 horas y habiendo transcurridos exactamente 180 segundos, se comprueba que los datos están presentes en el nodo con "delay".
 
